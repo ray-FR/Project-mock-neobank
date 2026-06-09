@@ -1,7 +1,10 @@
 import flask
 import markupsafe
+from flask_bcrypt import Bcrypt
+import sqlite3
 
-main_page = """
+
+mainHtml = """
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,24 +15,87 @@ main_page = """
     
 </head>
 <body>
-    
     <h1>Welcome</h1>
+    <button id="login">Login</button>
+    <button onclick="location.href='sign-up'" id="sign-up">Sign-Up</button>
 </body>
 </html>
 """
 
-listeMessage=[]
+returnMess = ""
 
-serv=flask.Flask("banking")
 
-# @serv.route("/style/style.css")
-# def ff():
-#     resp = flask.make_response(""" html {border: solid red;}""")
-#     resp.headers["content-type"] = "text/css"
+
+
+
+
+app=flask.Flask("banking")
+bcrypt = Bcrypt(app)
+
+@app.route("/", methods=["GET", "POST"])
+def main():
+    return mainHtml
+
+@app.route("/sign-up", methods=["GET", "POST"])
+def signup():
+    global returnMess
+
+    
+    email = flask.request.form.get('email')
+    firstName = flask.request.form.get('firstName')
+    lastName = flask.request.form.get('lastName')
+    password = flask.request.form.get('pass')
+    
+    if email and firstName and  lastName and password:
+        with sqlite3.connect("tmp.sqlite3") as db:
+            try: 
+                hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+                cur = db.cursor()
+                data = {'email': email, 'firstN': firstName, 'lastN': lastName, 'password': hashed_password}
+                cur.execute(f"INSERT INTO userBase (email, firstName, lastName, password) VALUES (:email, :firstN, :lastN, :password);", data)
+                db.commit()
+                returnMess = "Success!"
+            except sqlite3.Error as e:
+                
+                returnMess = "Error!"
+    
+
+    signUpHtml = f"""
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign-Up-Bank</title>
+</head>
+<body>
+    <h1>Sign Up!</h1>
+    <form method="POST">
+        <input required type="email" name="email" placeholder="Email">
+        <input required type="text" name="firstName" placeholder="Nom">
+        <input required type="text" name="lastName" placeholder="Prénom">
+        <input required type="password" name="pass" placeholder="mot de passe">
+        <input type="submit" value="Sign up" >
+    </form>
+    <h2>{returnMess}</h2
+</body>
+</html>
+"""
+
+    resp = flask.make_response(signUpHtml)
+    
+    return resp
+
+@app.route("/style/style.css")
+def ff():
+    resp = flask.make_response("""""")
+    resp.headers["content-type"] = "text/css"
+    return resp
+
+# @app.route("/scripts/main.js")
+# def scriptMain():
+#     resp = flask.make_response(scriptSignUp)
+#     resp.headers["content-type"] = "text/javascript"
 #     return resp
 
-@serv.route("/", methods=["GET", "POST"])
-def main():
-    return main_page
-
-serv.run(port=1234,host="127.0.0.1") # host="0.0.0.0" pour écouter l’exterieur
+app.run(port=1234,host="127.0.0.1") 
