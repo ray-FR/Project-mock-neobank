@@ -36,6 +36,58 @@ bcrypt = Bcrypt(app)
 def main():
     return mainHtml
 
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    returnMess = ""
+
+    email = flask.request.form.get('email')
+    password = flask.request.form.get('pass')
+
+    if email and password:
+        with sqlite3.connect("tmp.sqlite3") as db:
+            try:
+                cur = db.cursor()
+                cur.execute("SELECT password FROM userBase WHERE email == (?);", (email,))
+                res = cur.fetchall()
+                if (res == []):
+                    returnMess = "Error! Account does not exist"
+                else:
+                    
+                    hashed_password = res[0][0]
+                    
+                    if (bcrypt.check_password_hash(hashed_password, password)):
+                        
+                        returnMess = "Success!"
+                    else:
+                        returnMess = "Error! Wrong password"
+
+            except sqlite3.Error as e:
+                returnMess = "Error!"
+
+    loginHtml = f"""
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login-bank</title>
+</head>
+<body>
+    <h1>Login!</h1>
+    <form method="POST">
+        <input required type="email" name="email" placeholder="Email">
+        <input required type="password" name="pass" placeholder="Mot de passe">
+        <input type="submit" value="Login" >
+    </form>
+    <h2>{returnMess}</h2>
+    <button onclick="location.href='/'" id="main">Back</button>
+
+</body>
+</html>
+"""
+    resp = flask.make_response(loginHtml)
+    return resp
+
 @app.route("/sign-up", methods=["GET", "POST"])
 def signup():
     global returnMess
