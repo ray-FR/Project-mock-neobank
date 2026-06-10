@@ -149,6 +149,9 @@ def login():
 </html>
 """
     resp = flask.make_response(loginHtml)
+    if userAuth:
+        resp.set_cookie("userAuth", str(userAuth), max_age=timedelta(minutes=30), path="/")
+
     return resp
 
 @app.route("/sign-up", methods=["GET", "POST"])
@@ -199,7 +202,8 @@ def signup():
 """
 
     resp = flask.make_response(signUpHtml)
-    
+    if userAuth:
+        resp.set_cookie("userAuth", str(userAuth), max_age=timedelta(minutes=30), path="/")
     return resp
 
 @app.route("/style/style.css")
