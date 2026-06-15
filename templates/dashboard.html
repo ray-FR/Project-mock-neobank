@@ -4,25 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
-    <link rel="stylesheet" href="style/style.css">
+    <link rel="stylesheet" href="static/style.css">
     <script src="static/dashboard.js" defer></script>
 
 </head>
 <body>
     <nav>
-        <h1>Welcome {{name}}!</h1>
-
-        <form method="POST"><input type="submit" name="log-out" value="Log Out"></form>
+        <h3 id="logo"><a href="/">Neo Bank</a></h3>
+        <h5>Welcome {{name}}!</h5>
+        <form method="POST"><input type="submit" name="log-out" value="Log Out" id="log-out"></form>
     </nav>
-    {{accInfo|safe}}
-    {{sAccInfo|safe}}
-{% with messages = get_flashed_messages()%}
-{% if messages%}
-    {% for message in messages%}
-    <h2>{{message}}</h2>
+    {% with messages = get_flashed_messages(with_categories =true)%}
+    {% if messages%}
+    {% for category, message in messages%}
+    <h5 id="{{ category }}">{{message}}</h5>
     {%endfor%}
     {%endif%}
     {%endwith%}
+    
+    {{accInfo|safe}}
+    {{sAccInfo|safe}}
+
 
 </body>
 </html>
