@@ -55,13 +55,17 @@ def dashboard():
             name = res[0][0]
             accID = res[0][1]
             
-            cur.execute("SELECT money FROM bankAccounts where accountID == (?);", (accID,))
-            money = cur.fetchone()[0]
-            
+            cur.execute("SELECT money, isBlocked FROM bankAccounts where accountID == (?);", (accID,))
+            bankRes = cur.fetchall()
+            money = bankRes[0][0]
+            accountStatus = bankRes[0][1]
+            if accountStatus == 1:
+                accInfo = f"<div id = 'dashboard'><div id = 'blocked-acc-info'><h4> Your account has been blocked.</h4>\n<p>Please contact your bank administrator.</p>\n</div>"
 
-            accInfo = f"<div id='acc-info'><h2> You have {money} euros on your personal account.</h2>\n<button class='money-button' value='add-acc'>Add money</button>\n<button class='money-button' value='send-acc'>Send money</button>\n<button class='money-button' value='withdraw-acc'>Withdraw money</button>\n</div>"
+            if accountStatus == 0:
+                accInfo = f"<div id = 'dashboard'><div id='acc-info'><h4> You have {money} euros on your personal account.</h4>\n<div class='action-btn-flex'><button class='money-button' value='add-acc'>Add money</button>\n<button class='money-button' value='send-acc'>Send money</button>\n<button class='money-button' value='withdraw-acc'>Withdraw money</button>\n</div></div>"
             if res[0][2] == None:
-                sAccInfo = "<div id='no-sharedAcc-info'><h2> You do not have a shared bank account.\n<button id='create-shared-account'>Create shared account</button>\n<button id='join-shared-account'>Join shared account</button>\n</div>"
+                sAccInfo = "<div id='no-sharedAcc-info'><h4> You do not have a shared bank account.</h4>\n<div class='action-btn-flex'><button id='create-shared-account'>Create shared account</button>\n<button id='join-shared-account'>Join shared account</button>\n</div>\n</div>\n</div>"
                 if createSharedAcc:
                     passShrAcc = flask.request.form.get('passwordSharedAccount')
                     hashed_password = bcrypt.generate_password_hash(passShrAcc).decode('utf-8')
@@ -70,13 +74,13 @@ def dashboard():
                     sAccID = cur.fetchone()[0]
                     cur.execute("UPDATE userBase SET sharedAccountID = (?) WHERE userID == (?);", (sAccID,accID))
                     db.commit()
-                    flask.flash(f"Created shared account successfully!")
+                    flask.flash(f"Created shared account successfully!", 'success')
                     return flask.redirect(flask.url_for('dashboard'))
                 if joinSharedAcc:
                     cur.execute("SELECT accountID, password FROM bankAccounts where name == (?);", (joinSharedAcc,))
                     tmp = cur.fetchall()
                     if (tmp == []):
-                        flask.flash(f"Error! Shared account doesn't exist")
+                        flask.flash(f"Error! Shared account doesn't exist", 'error')
                         return flask.redirect(flask.url_for('dashboard'))
 
                     passShrAcc = flask.request.form.get('passwordSharedAccount')
@@ -90,9 +94,21 @@ def dashboard():
                 
             else:
                 sAccID = res[0][2]
-                cur.execute("SELECT money FROM bankAccounts where accountID == (?);", (sAccID,))
-                sharedMoney = cur.fetchone()[0]
-                sAccInfo = f"<div id='Sacc-info'><h2> You have {sharedMoney} euros on your shared account.</h2>\n<button class='money-button' value='add-Sacc'>Add money</button>\n<button class='money-button' value='withdraw-Sacc'>Withdraw money</button>\n</div>"
+                cur.execute("SELECT money, isBlocked FROM bankAccounts where accountID == (?);", (sAccID,))
+                sharedBankRes = cur.fetchall()
+
+                sharedMoney = sharedBankRes[0][0]
+                
+                if sharedBankRes[0][1] == 1:
+                    sAccInfo = f"<div id = 'blocked-acc-info'><h4> Your shared account has been blocked.</h4>\n<p>Please contact your bank administrator.</p>\n</div>\n</div>"
+
+                if sharedBankRes[0][1] == 0:
+                    sAccInfo = f"<div id='Sacc-info'><h4> You have {sharedMoney} euros on your shared account.</h4>\n"
+                    if accountStatus == 1:
+                        sAccInfo += "<div class='action-btn-flex'><button class='money-button' value='add-Sacc' disabled >Add money</button>\n<button class='money-button' value='withdraw-Sacc' disabled>Withdraw money</button>\n</div></div></div>"
+                    else:
+                        sAccInfo += "<div class='action-btn-flex'><button class='money-button' value='add-Sacc'>Add money</button>\n<button class='money-button' value='withdraw-Sacc'>Withdraw money</button>\n</div></div></div>"
+
                 if addSAccM:
                     cur.execute("UPDATE bankAccounts SET money=(?)+(?) WHERE accountID == (?);", (sharedMoney, addSAccM, sAccID))
                     cur.execute("UPDATE bankAccounts SET money=(?)-(?) WHERE accountID == (?);", (money, addSAccM, accID))
@@ -125,8 +141,8 @@ def dashboard():
                     flask.flash(f"Error! User doesn't exist!", 'error')
                     return flask.redirect(flask.url_for('dashboard'))
                 else:
-                    money = res[0][1]
-                    cur.execute("UPDATE bankAccounts SET money=(?)+(?) WHERE accountID == (?);", (money, sendAccM, res[0][0]))
+                    moneyReceiver = res[0][1]
+                    cur.execute("UPDATE bankAccounts SET money=(?)+(?) WHERE accountID == (?);", (moneyReceiver, sendAccM, res[0][0]))
                     
                     cur.execute("UPDATE bankAccounts SET money=(?)-(?) WHERE accountID == (?);", (money, sendAccM, flask.session.get('userAuth')))
 
