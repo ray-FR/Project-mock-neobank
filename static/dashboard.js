@@ -22,11 +22,11 @@ if (createSharedAcc != null){
         newDivC.id = "sharedMoneyCreation";
         newDivC.innerHTML = 
         `
-            <h3>Create Shared Account</h3>
+            <h4>Create Shared Account</h3>
             <form method = "POST">
                 <input type="text" name="createNameSharedAccount" placeholder="Name of shared account">
                 <input type="password" name="passwordSharedAccount" placeholder="Password of shared account">
-                <input type="submit" value="Create">
+                <input type = "submit" class="confirm-btn" value="Create">
 
             </form>
         `;
@@ -44,11 +44,11 @@ if (createSharedAcc != null){
         newDivJ.id = "sharedMoneyJoin";
         newDivJ.innerHTML = 
         `
-            <h3>Join Shared Account</h3>
+            <h4>Join Shared Account</h3>
             <form method = "POST">
                 <input type="text" name="joinNameSharedAccount" placeholder="Name of shared account">
                 <input type="password" name="passwordSharedAccount" placeholder="Password of shared account">
-                <input type="submit" value="Join">
+                <input type = "submit" class="confirm-btn" value="Join">
             </form>
         `;
         noSharedAccountInfo.appendChild(newDivJ);
@@ -66,10 +66,10 @@ Array.from(moneyButtons).forEach(element => {
             case "add-acc":
                 newDiv.innerHTML=
                 `
-                    <h3>Add money</h3>
+                    <h5>Add money</h5>
                     <form method = "post">
                         <input required type = 'number' name = 'amount-add' placeholder='Amount of money'>
-                        <input type = "submit" value="Add">
+                        <input type = "submit" class="confirm-btn" value="Add">
                     </form>
                 `
                 accountInfo.appendChild(newDiv)
@@ -78,11 +78,11 @@ Array.from(moneyButtons).forEach(element => {
             case "send-acc":
                 newDiv.innerHTML=
                 `
-                    <h3>Send money</h3>
+                    <h5>Send money</h5>
                     <form method = "post">
                         <input required type = 'number' name = 'amount-send' placeholder='Amount of money'>
                         <input required type = 'email' name = 'send-email' placeholder='Email'>
-                        <input type = "submit" value="Send">
+                        <input type = "submit" class="confirm-btn" value="Send">
                     </form>
                 `
                 accountInfo.appendChild(newDiv)
@@ -91,10 +91,10 @@ Array.from(moneyButtons).forEach(element => {
             case "withdraw-acc":
                 newDiv.innerHTML=
                 `
-                    <h3>Withdraw money</h3>
+                    <h5>Withdraw money</h5>
                     <form method = "post">
                         <input required type = 'number' name = 'amount-withdraw' placeholder='Amount of money'>
-                        <input type = "submit" value="Withdraw">
+                        <input type = "submit" class="confirm-btn" value="Withdraw">
                     </form>
                 `
                 accountInfo.appendChild(newDiv)
@@ -104,10 +104,10 @@ Array.from(moneyButtons).forEach(element => {
             case "add-Sacc":
                 newDiv.innerHTML=
                 `
-                    <h3>Add money</h3>
+                    <h5>Add money</h5>
                     <form method = "post">
                         <input required type = 'number' name = 'amount-Sadd' placeholder='Amount of money'>
-                        <input type = "submit" value="Add">
+                        <input type = "submit" class="confirm-btn" value="Add">
                     </form>
                 `
                 SaccountInfo.appendChild(newDiv)
@@ -116,10 +116,10 @@ Array.from(moneyButtons).forEach(element => {
             case "withdraw-Sacc":
                 newDiv.innerHTML=
                 `
-                    <h3>Withdraw money</h3>
+                    <h5>Withdraw money</h5>
                     <form method = "post">
                         <input required type = 'number' name = 'amount-Swithdraw' placeholder='Amount of money'>
-                        <input type = "submit" value="Withdraw">
+                        <input type = "submit" class="confirm-btn" value="Withdraw">
                     </form>
                 `
                 SaccountInfo.appendChild(newDiv)
