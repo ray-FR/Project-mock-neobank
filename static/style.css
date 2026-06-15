@@ -1,0 +1,217 @@
+@import url('https://fonts.googleapis.com/css?family=EB%20Garamond:700|Inter:400');
+@import url('https://fonts.googleapis.com/css2?family=Baskervville:ital,wght@1,400..700&display=swap');
+
+body {
+  font-family: 'Inter';
+  font-weight: 400;
+}
+
+h1, h2, h3, h4, h5, #log-out {
+  font-family: 'EB Garamond';
+  font-weight: 700;
+}
+
+html {font-size: 100%;} /* 16px */
+
+h1 {font-size: 4.110rem; /* 67.36px */}
+
+h2 {font-size: 3.058rem; /* 50.56px */}
+
+h3 {font-size: 2.269rem; /* 37.92px */}
+
+h4 {font-size: 1.677rem; /* 28.48px */}
+
+h5, #log-out     {font-size: 1.233rem; /* 21.28px */}
+
+small {font-size: 0.650rem; /* 12px */}
+
+
+:root{
+--text: rgba(238, 250, 229, 1);
+--background: rgba(15, 27, 5, 1);
+--primary: rgba(178, 233, 129, 1);
+--secondary: rgba(25, 83, 143, 1);
+--accent: rgba(76, 46, 218, 1);
+
+}
+
+html {
+    background-color: var(--background);
+    color: var(--text);
+}
+
+a {
+    list-style: none;
+    text-decoration: none;
+    color: var(--accent);
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+#logo{
+    font-family: "Baskervville", serif;
+    font-optical-sizing: auto;
+    font-style: italic;
+    padding-left: 10px;
+}
+
+#logo:hover{
+    opacity: 0.8;
+}
+
+.primary-btn{
+    background-color: var(--primary);
+    color: black;
+    border-radius: 10px;
+    border-style: none;
+    font-size: 20px;
+    padding: 8px 30px;
+    
+    cursor: pointer;
+
+}
+
+.secondary-btn{
+    background-color: var(--secondary);
+    color: var(--text);
+    background: linear-gradient(135deg, rgba(25, 83, 143, 0.8), rgba(255, 255, 255, 0));
+    
+    border-radius: 10px;
+    border-style: none;
+    font-size: 20px;
+    padding: 8px 30px;
+    cursor: pointer;
+
+}
+
+.main-content > button {
+    margin: 15px 0px;
+}
+
+#CTA-btns {
+    display: flex;
+    gap: 30px;
+}
+#index-menu {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.main-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.account-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+nav > input {
+    background-color: white;
+}
+
+input {
+    padding: 10px;
+    background-color: black;
+    color: var(--text);
+    border-radius: 10px;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#log-out {
+    background-color: var(--background);
+    border: var(--text) 2px solid;
+    border-radius: 30px;
+    cursor: pointer;
+
+}
+
+#dashboard {
+    padding-top: 10%;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: flex-start;
+    min-height: 200px;
+}
+
+.action-btn-flex {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.action-btn-flex > button {
+    background-color: var(--secondary);
+    opacity: 0.7;
+    color: white;
+    cursor: pointer;
+    margin: 0px 8px;
+    padding: 2px 8px;
+    border-radius: 30px;
+    border: none;
+    font-size: 15px;
+
+}
+
+.action-btn-flex > button:hover {
+    opacity: 0.5;
+}
+
+.action-btn-flex > button:disabled {
+    opacity: 0.3;
+}
+
+#acc-info, #Sacc-info, #blocked-acc-info, #no-sharedAcc-info {
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 30px;
+    padding: 25px 50px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0));
+    backdrop-filter: 5px;
+
+}
+
+#blocked-acc-info {
+    background: linear-gradient(135deg, rgba(255, 0, 0, 0.2), rgba(255, 255, 255, 0));
+}
+
+.confirm-btn {
+    margin-left: 20px;
+    background-color: var(--primary);
+    color: black;
+    border-radius: 15px;
+}
+
+#success {
+    background-color: green;
+    width: 30%;
+    padding: 10px;
+    text-align: center;
+    margin: auto;
+    border-radius: 20px;
+    
+}
+
+#error {
+    background-color: red;
+    width: fit-content;
+    padding: 10px;
+    text-align: center;
+    margin: auto;
+    border-radius: 10px;
+    
+}
