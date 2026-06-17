@@ -1,9 +1,7 @@
 import flask
-import markupsafe
 from flask_bcrypt import Bcrypt
 from flask_session import Session
 import sqlite3
-from datetime import timedelta
 
 app=flask.Flask("banking")
 bcrypt = Bcrypt(app)
@@ -72,7 +70,7 @@ def dashboard():
                     cur.execute("INSERT INTO bankAccounts (accountType, name, password) VALUES (1, (?), (?));", (createSharedAcc,hashed_password))
                     cur.execute("SELECT last_insert_rowid();")
                     sAccID = cur.fetchone()[0]
-                    cur.execute("UPDATE userBase SET sharedAccountID = (?) WHERE userID == (?);", (sAccID,accID))
+                    cur.execute("UPDATE userBase SET sharedAccountID = (?) WHERE userID == (?);", (sAccID,userID))
                     db.commit()
                     flask.flash(f"Created shared account successfully!", 'success')
                     return flask.redirect(flask.url_for('dashboard'))
@@ -85,7 +83,7 @@ def dashboard():
 
                     passShrAcc = flask.request.form.get('passwordSharedAccount')
                     if (bcrypt.check_password_hash(tmp[0][1], passShrAcc)):
-                        cur.execute("UPDATE userBase SET sharedAccountID = (?) WHERE userID == (?);", (tmp[0][0],accID))
+                        cur.execute("UPDATE userBase SET sharedAccountID = (?) WHERE userID == (?);", (tmp[0][0],userID))
                         flask.flash(f"Joined shared account!", 'success')
                         return flask.redirect(flask.url_for('dashboard'))
                     flask.flash(f"Error! wrong password", 'error')

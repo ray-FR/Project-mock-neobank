@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css?family=EB%20Garamond:700|Inter:400');
-@import url('https://fonts.googleapis.com/css2?family=Baskervville:ital,wght@1,400..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1&display=swap');
 
 body {
   font-family: 'Inter';
@@ -52,7 +52,7 @@ body {
 }
 
 #logo{
-    font-family: "Baskervville", serif;
+    font-family: "Instrument Serif", serif;
     font-optical-sizing: auto;
     font-style: italic;
     padding-left: 10px;
