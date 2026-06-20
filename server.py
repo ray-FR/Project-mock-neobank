@@ -5,7 +5,7 @@ import sqlite3
 
 app=flask.Flask("banking")
 bcrypt = Bcrypt(app)
-
+SQLITE_DB = "tmp2.sqlite3"
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
@@ -45,7 +45,7 @@ def dashboard():
 
         
     
-    with sqlite3.connect("tmp.sqlite3") as db:
+    with sqlite3.connect(SQLITE_DB) as db:
         try:
             cur = db.cursor()
             cur.execute("SELECT firstName, accountID, sharedAccountID FROM userBase where userID == (?);", (userID,))
@@ -67,15 +67,17 @@ def dashboard():
                 if createSharedAcc:
                     passShrAcc = flask.request.form.get('passwordSharedAccount')
                     hashed_password = bcrypt.generate_password_hash(passShrAcc).decode('utf-8')
-                    cur.execute("INSERT INTO bankAccounts (accountType, name, password) VALUES (1, (?), (?));", (createSharedAcc,hashed_password))
+                    cur.execute("INSERT INTO sharedBankAccounts (name, password) VALUES ((?), (?));", (createSharedAcc, hashed_password))
                     cur.execute("SELECT last_insert_rowid();")
                     sAccID = cur.fetchone()[0]
+                    sAccID = (str) (sAccID) + ","
+                    
                     cur.execute("UPDATE userBase SET sharedAccountID = (?) WHERE userID == (?);", (sAccID,userID))
                     db.commit()
                     flask.flash(f"Created shared account successfully!", 'success')
                     return flask.redirect(flask.url_for('dashboard'))
                 if joinSharedAcc:
-                    cur.execute("SELECT accountID, password FROM bankAccounts where name == (?);", (joinSharedAcc,))
+                    cur.execute("SELECT sharedAccountID, password FROM sharedBankAccounts where name == (?);", (joinSharedAcc,))
                     tmp = cur.fetchall()
                     if (tmp == []):
                         flask.flash(f"Error! Shared account doesn't exist", 'error')
@@ -92,29 +94,34 @@ def dashboard():
                 
             else:
                 sAccID = res[0][2]
-                cur.execute("SELECT money, isBlocked FROM bankAccounts where accountID == (?);", (sAccID,))
-                sharedBankRes = cur.fetchall()
+                sharedAccList = sAccID.split(',')[:-1]
+                sharedAccList = list(map(int, sharedAccList))
+                sAccInfo = "<div id = shared-acc-info><h4>shared account(s)</h4>"
+                print(sharedAccList)
+                for accIDS in sharedAccList:
 
-                sharedMoney = sharedBankRes[0][0]
-                
-                if sharedBankRes[0][1] == 1:
-                    sAccInfo = f"<div id = 'blocked-acc-info'><h4> Your shared account has been blocked.</h4>\n<p>Please contact your bank administrator.</p>\n</div>\n</div>"
+                    cur.execute("SELECT money, isBlocked, name FROM sharedBankAccounts where sharedAccountID == (?);", (accIDS,))
 
-                if sharedBankRes[0][1] == 0:
-                    sAccInfo = f"<div id='Sacc-info'><h4> You have {sharedMoney} euros on your shared account.</h4>\n"
-                    if accountStatus == 1:
-                        sAccInfo += "<div class='action-btn-flex'><button class='money-button' value='add-Sacc' disabled >Add money</button>\n<button class='money-button' value='withdraw-Sacc' disabled>Withdraw money</button>\n</div></div></div>"
-                    else:
-                        sAccInfo += "<div class='action-btn-flex'><button class='money-button' value='add-Sacc'>Add money</button>\n<button class='money-button' value='withdraw-Sacc'>Withdraw money</button>\n</div></div></div>"
+                    sharedBankRes = cur.fetchall()
+                    sharedMoney = sharedBankRes[0][0]
+                    if sharedBankRes[0][1] == 1:
+                        sAccInfo += f"<div class = 'blocked-Sacc-info'><h5> The shared account {sharedBankRes[0][2]} has been blocked.</h5>\n</div>\n"
 
+                    if sharedBankRes[0][1] == 0:
+                        sAccInfo += f"<div class='Sacc-info'><h5> {sharedBankRes[0][2]}: {sharedMoney} euros.</h5>\n</div>"
+                if accountStatus == 1:
+                    sAccInfo += "<div class='action-btn-flex'><button class='money-button' value='add-Sacc' disabled >Add money</button>\n<button class='money-button' value='withdraw-Sacc' disabled>Withdraw money</button><button class='money-button' value='join-other-Sacc'>Join other </button\n</div></div>"
+                else:
+                    sAccInfo += "<div class='action-btn-flex'><button class='money-button' value='add-Sacc'>Add money</button>\n<button class='money-button' value='withdraw-Sacc'>Withdraw money</button>\n</div></div>"
+                sAccInfo += "</div>"
                 if addSAccM:
-                    cur.execute("UPDATE bankAccounts SET money=(?)+(?) WHERE accountID == (?);", (sharedMoney, addSAccM, sAccID))
+                    cur.execute("UPDATE sharedBankAccounts SET money=(?)+(?) WHERE sharedAccountID == (?);", (sharedMoney, addSAccM, accIDS))
                     cur.execute("UPDATE bankAccounts SET money=(?)-(?) WHERE accountID == (?);", (money, addSAccM, accID))
                     db.commit()
                     flask.flash(f"Added {addSAccM}€ to the shared account successfully!", 'success')
                     return flask.redirect(flask.url_for('dashboard'))
                 if withdrawSAccM:
-                    cur.execute("UPDATE bankAccounts SET money=(?)-(?) WHERE accountID == (?);", (sharedMoney, withdrawSAccM, sAccID))
+                    cur.execute("UPDATE sharedBankAccounts SET money=(?)-(?) WHERE sharedAccountID == (?);", (sharedMoney, withdrawSAccM, accIDS))
                     cur.execute("UPDATE bankAccounts SET money=(?)+(?) WHERE accountID == (?);", (money, withdrawSAccM, accID))
                     db.commit()
                     flask.flash(f"Withdrawn {withdrawSAccM}€ from the shared account successfully!", 'success')
@@ -180,7 +187,7 @@ def login():
     password = flask.request.form.get('pass')
 
     if email and password:
-        with sqlite3.connect("tmp.sqlite3") as db:
+        with sqlite3.connect(SQLITE_DB) as db:
             try:
                 cur = db.cursor()
                 cur.execute("SELECT password, userID FROM userBase WHERE email == (?);", (email,))
@@ -213,7 +220,6 @@ def login():
 
 @app.route("/sign-up", methods=["GET", "POST"])
 def signup():
-    returnMess = ""
     userAuth = None
     email = flask.request.form.get('email')
     firstName = flask.request.form.get('firstName')
@@ -221,7 +227,7 @@ def signup():
     password = flask.request.form.get('pass')
     
     if email and firstName and  lastName and password:
-        with sqlite3.connect("tmp.sqlite3") as db:
+        with sqlite3.connect(SQLITE_DB) as db:
             try: 
                 hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
                 cur = db.cursor()
@@ -230,7 +236,7 @@ def signup():
                 cur.execute("SELECT last_insert_rowid();")
                 res = cur.fetchall()
                 userAuth = res[0][0]
-                cur.execute("INSERT INTO bankAccounts (accountType) VALUES (0);")
+                cur.execute("INSERT INTO bankAccounts (isBlocked) VALUES (0);")
                 cur.execute("SELECT last_insert_rowid();")
                 res = cur.fetchall()
                 cur.execute("UPDATE userBase SET accountID = (?) WHERE email==(?);", (res[0][0], email))

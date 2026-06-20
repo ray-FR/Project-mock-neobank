@@ -176,7 +176,7 @@ nav {
     opacity: 0.3;
 }
 
-#acc-info, #Sacc-info, #blocked-acc-info, #no-sharedAcc-info {
+#acc-info, #Sacc-info, #shared-acc-info {
     border: 1px solid rgba(255, 255, 255, 0.5);
     border-radius: 30px;
     padding: 25px 50px;
@@ -185,7 +185,7 @@ nav {
 
 }
 
-#blocked-acc-info {
+#blocked-Sacc-info {
     background: linear-gradient(135deg, rgba(255, 0, 0, 0.2), rgba(255, 255, 255, 0));
 }
 
