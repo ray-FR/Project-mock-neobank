@@ -6,7 +6,10 @@ body {
   font-weight: 400;
 }
 
-h1, h2, h3, h4, h5, #log-out {
+h4, h5, #log-out     {font-size: 1.233rem; font-family: "Inter", sans-serif; /* 21.28px */}
+
+
+h1, h2, h3, #log-out {
   font-family: 'EB Garamond';
   font-weight: 700;
 }
@@ -19,9 +22,8 @@ h2 {font-size: 3.058rem; /* 50.56px */}
 
 h3 {font-size: 2.269rem; /* 37.92px */}
 
-h4 {font-size: 1.677rem; /* 28.48px */}
+h4 {font-size: 1.677rem; /* 28.48px */ text-align: center;}
 
-h5, #log-out     {font-size: 1.233rem; /* 21.28px */}
 
 small {font-size: 0.650rem; /* 12px */}
 
@@ -29,7 +31,7 @@ small {font-size: 0.650rem; /* 12px */}
 :root{
 --text: rgba(238, 250, 229, 1);
 --background: rgba(15, 27, 5, 1);
---primary: rgba(178, 233, 129, 1);
+--primary: rgb(149, 197, 108);
 --secondary: rgba(25, 83, 143, 1);
 --accent: rgba(76, 46, 218, 1);
 
@@ -162,7 +164,7 @@ nav {
     cursor: pointer;
     margin: 0px 8px;
     padding: 2px 8px;
-    border-radius: 30px;
+    border-radius: 7px;
     border: none;
     font-size: 15px;
 
@@ -185,7 +187,46 @@ nav {
 
 }
 
-#blocked-Sacc-info {
+
+
+.Sacc-info, .blocked-Sacc-info{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 5px 20px;
+    margin-bottom: 20px;
+    background-color: var(--background);
+}
+
+.Sacc-info > h5, .blocked-Sacc-info > h5{
+    font-size: 1rem;
+    margin: 10px 15px;
+}
+
+.Sacc-info > button {
+    font-size: 15px;
+    padding: 7px 9px;
+    border-radius: 5px;
+    border: none;
+    height: fit-content;
+    background-color: var(--primary);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+
+
+}
+
+.Sacc-info > button:hover {
+    background-color: rgba(178, 233, 129, 0.6);
+}
+
+#listOfAccs {
+    overflow-y:auto;
+}
+
+.blocked-Sacc-info {
     background: linear-gradient(135deg, rgba(255, 0, 0, 0.2), rgba(255, 255, 255, 0));
 }
 
