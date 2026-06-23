@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shared accounts</title>
+    <link rel="stylesheet" href="static/style.css">
+    <script src="static/dashboard.js" defer></script>
+
+</head>
+<body>
+    <nav>
+        <h3 id="logo"><a href="/">NeoBank</a></h3>
+        
+        <form method="POST"><input type="submit" name="log-out" value="Log Out" id="log-out"></form>
+    </nav>
+    {% with messages = get_flashed_messages(with_categories =true)%}
+    {% if messages%}
+    {% for category, message in messages%}
+    <h5 id="{{ category }}">{{message}}</h5>
+    {%endfor%}
+    {%endif%}
+    {%endwith%}
+    
+    {{sAccInfo|safe}}
+
+
+</body>
+</html>
