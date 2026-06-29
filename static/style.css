@@ -31,7 +31,7 @@ small {font-size: 0.650rem; /* 12px */}
 :root{
 --text: rgba(238, 250, 229, 1);
 --background: rgba(15, 27, 5, 1);
---primary: rgb(149, 197, 108);
+--primary: rgba(149, 197, 108, 1);
 --secondary: rgba(25, 83, 143, 1);
 --accent: rgba(76, 46, 218, 1);
 
@@ -58,6 +58,7 @@ body {
     font-optical-sizing: auto;
     font-style: italic;
     padding-left: 10px;
+    margin-top: 10px;
 }
 
 #logo:hover{
@@ -97,12 +98,12 @@ body {
     display: flex;
     gap: 30px;
 }
-#index-menu {
+/* #index-menu {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-}
+} */
 
 .main-content {
     display: flex;
@@ -155,15 +156,15 @@ nav {
 .action-btn-flex {
     display: flex;
     justify-content: space-evenly;
+    margin-bottom: 20px;
 }
 
 .action-btn-flex > button {
-    background-color: var(--secondary);
-    opacity: 0.7;
+    background-color: rgba(25, 83, 143, 0.5);
     color: white;
     cursor: pointer;
     margin: 0px 8px;
-    padding: 2px 8px;
+    padding: 8px 10px;
     border-radius: 7px;
     border: none;
     font-size: 15px;
@@ -178,10 +179,24 @@ nav {
     opacity: 0.3;
 }
 
-#acc-info, #Sacc-info, #shared-acc-info {
+#listOfAccs{
+    display: flex;
+    flex-direction: column;
     border: 1px solid rgba(255, 255, 255, 0.5);
     border-radius: 30px;
     padding: 25px 50px;
+    background-color: rgba(149, 197, 108, 0.1);
+    padding: 10px 20px;
+    margin: 20px 20px;
+    gap: 15px;
+
+}
+
+
+#acc-info, #Sacc-info, #shared-acc-info {
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 30px;
+    
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0));
     backdrop-filter: 5px;
 
@@ -196,25 +211,34 @@ nav {
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 15px;
     padding: 5px 20px;
-    margin-bottom: 20px;
     background-color: var(--background);
 }
 
-.Sacc-info > h5, .blocked-Sacc-info > h5{
+.Sacc-info > h5, .blocked-Sacc-info > h5, #shared-acc-info > h5{
     font-size: 1rem;
     margin: 10px 15px;
 }
 
-.Sacc-info > button {
+#shared-acc-info > h5 {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.shared-account-select-btn, #selected-shared-account-btn {
     font-size: 15px;
     padding: 7px 9px;
     border-radius: 5px;
     border: none;
     height: fit-content;
-    background-color: var(--primary);
+    background-color: rgba(150, 197, 108, 0.5);
+    color: var(--text);
     border: 1px solid rgba(255, 255, 255, 0.1);
     cursor: pointer;
+}
 
+#selected-shared-account-btn {
+    background-color: rgb(149, 197, 108, 1);
+    color: black;
 
 }
 
@@ -237,6 +261,10 @@ nav {
     border-radius: 15px;
 }
 
+#moneyMenu {
+    margin: 25px;
+}
+
 #success {
     background-color: green;
     width: 30%;
@@ -244,6 +272,7 @@ nav {
     text-align: center;
     margin: auto;
     border-radius: 20px;
+    font-size: 13px;
     
 }
 
@@ -254,5 +283,6 @@ nav {
     text-align: center;
     margin: auto;
     border-radius: 10px;
+    font-size: 13px;
     
 }
