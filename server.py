@@ -107,14 +107,21 @@ def dashboard():
 def shared_account():
 
     userID = flask.session.get('userAuth')
+    logOut = flask.request.form.get('log-out')
 
     if not userID:
         return flask.redirect(flask.url_for("login"))
+
+    if logOut:
+        flask.session['userAuth'] = None
+        return flask.redirect(flask.url_for("main"))
+
 
     sAccInfo = ""
 
     createSharedAcc = flask.request.form.get('createNameSharedAccount')
     joinSharedAcc = flask.request.form.get('joinNameSharedAccount')
+    joinOtherSharedAcc = flask.request.form.get('joinNewSharedAccount')
 
     addSAccM = flask.request.form.get('amount-Sadd')
     withdrawSAccM = flask.request.form.get('amount-Swithdraw')
@@ -211,18 +218,56 @@ def shared_account():
                 else:
                     sAccInfo += "<div class='action-btn-flex'><button class='money-button' value='add-Sacc'>Add money</button>\n<button class='money-button' value='withdraw-Sacc'>Withdraw money</button><button class='money-button' value='join-other-Sacc'>Join other shared Account</button>\n</div></div>"
                 sAccInfo += "</div>"
+
+                if joinOtherSharedAcc:
+                    unhashed_password = flask.request.form.get('passwordSharedAccount')
+                    cur.execute("SELECT sharedAccountID, name, password FROM sharedBankAccounts WHERE name == (?);", (joinOtherSharedAcc,))
+                    tmp = cur.fetchall()
+                    if tmp == []:
+                        flask.flash("Error the account doesn't exist", "error")
+                        return flask.redirect(flask.url_for('shared_account'))
+                    if not bcrypt.check_password_hash(tmp[0][2], unhashed_password):
+                        flask.flash("Error, wrong password", "error")
+                        return flask.redirect(flask.url_for('shared_account'))
+                    sAccID += (str) (tmp[0][0]) + ','
+                    cur.execute("UPDATE userBase SET sharedAccountID = (?) WHERE UserID == (?);", (sAccID, userID))
+                    db.commit()
+                    flask.flash(f"Joined {joinOtherSharedAcc} successfully!", "success")
+                    return flask.redirect(flask.url_for('shared_account'))
+
                 if addSAccM:
-                    cur.execute("UPDATE sharedBankAccounts SET money=(?)+(?) WHERE sharedAccountID == (?);", (sharedMoney, addSAccM, accIDS))
+                    if not selectedSharedAccQuery:
+                        flask.flash(f"Please select a shared account first!", 'error')
+                        return flask.redirect(flask.url_for('shared_account'))
+                    if selectedSharedAccQuery not in sharedAccList:
+                        flask.flash(f"You are not a part of this shared account.", 'error')
+                        return flask.redirect(flask.url_for('shared_account'))
+                    if selectedSharedAccQuery in blockedSharedAccList:
+                        flask.flash(f"This shared account is blocked.", 'error')
+                        return flask.redirect(flask.url_for('shared_account'))
+                    
+                    cur.execute("UPDATE sharedBankAccounts SET money=(?)+(?) WHERE sharedAccountID == (?);", (sharedAccMoneyAmounts[selectedSharedAccQuery], addSAccM, selectedSharedAccQuery))
                     cur.execute("UPDATE bankAccounts SET money=(?)-(?) WHERE accountID == (?);", (money, addSAccM, accID))
                     db.commit()
                     flask.flash(f"Added {addSAccM}€ to the shared account successfully!", 'success')
-                    return flask.redirect(flask.url_for('dashboard'))
+                    return flask.redirect(flask.url_for('shared_account'))
+                
                 if withdrawSAccM:
-                    cur.execute("UPDATE sharedBankAccounts SET money=(?)-(?) WHERE sharedAccountID == (?);", (sharedMoney, withdrawSAccM, accIDS))
+                    if not selectedSharedAccQuery:
+                        flask.flash(f"Please select a shared account first!", 'error')
+                        return flask.redirect(flask.url_for('shared_account'))
+                    if selectedSharedAccQuery not in sharedAccList:
+                        flask.flash(f"You are not a part of this shared account.", 'error')
+                        return flask.redirect(flask.url_for('shared_account'))
+                    if selectedSharedAccQuery in blockedSharedAccList:
+                        flask.flash(f"This shared account is blocked.", 'error')
+                        return flask.redirect(flask.url_for('shared_account'))
+                    print(sharedMoney, withdrawSAccM)
+                    cur.execute("UPDATE sharedBankAccounts SET money=(?)-(?) WHERE sharedAccountID == (?);", (sharedAccMoneyAmounts[selectedSharedAccQuery], withdrawSAccM, selectedSharedAccQuery))
                     cur.execute("UPDATE bankAccounts SET money=(?)+(?) WHERE accountID == (?);", (money, withdrawSAccM, accID))
                     db.commit()
                     flask.flash(f"Withdrawn {withdrawSAccM}€ from the shared account successfully!", 'success')
-                    return flask.redirect(flask.url_for('dashboard'))
+                    return flask.redirect(flask.url_for('shared_account'))
 
 
 
@@ -241,7 +286,6 @@ def shared_account():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    returnMess = ""
     userAuth = None
     email = flask.request.form.get('email')
     password = flask.request.form.get('pass')

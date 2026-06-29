@@ -126,6 +126,20 @@ Array.from(moneyButtons).forEach(element => {
                 SaccountInfo.appendChild(newDiv)
                 break;
 
+            case "join-other-Sacc":
+                newDiv.innerHTML=
+                `
+                    <h5>Join other shared account</h5>
+                    <form method = "post">
+                        <input required type = 'name' name = 'joinNewSharedAccount' placeholder='name of the shared account'>
+                        <input required type="password" name="passwordSharedAccount" placeholder="Password of shared account">
+                        <input type = "submit" class="confirm-btn" value="Join">
+                    </form>
+
+                `
+                SaccountInfo.appendChild(newDiv);
+                break;
+
         }
     });
 });
