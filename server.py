@@ -160,28 +160,33 @@ def shared_account():
                     cur.execute("UPDATE userBase SET sharedAccountID = (?) WHERE userID == (?);", (sAccID,userID))
                     db.commit()
                     flask.flash(f"Created shared account successfully!", 'success')
-                    return flask.redirect(flask.url_for('dashboard'))
+                    return flask.redirect(flask.url_for('shared_account'))
                 if joinSharedAcc:
                     cur.execute("SELECT sharedAccountID, password FROM sharedBankAccounts where name == (?);", (joinSharedAcc,))
                     tmp = cur.fetchall()
                     if (tmp == []):
                         flask.flash(f"Error! Shared account doesn't exist", 'error')
-                        return flask.redirect(flask.url_for('dashboard'))
+                        return flask.redirect(flask.url_for('shared_account'))
 
                     passShrAcc = flask.request.form.get('passwordSharedAccount')
                     if (bcrypt.check_password_hash(tmp[0][1], passShrAcc)):
                         cur.execute("UPDATE userBase SET sharedAccountID = (?) WHERE userID == (?);", (tmp[0][0],userID))
                         flask.flash(f"Joined shared account!", 'success')
-                        return flask.redirect(flask.url_for('dashboard'))
+                        return flask.redirect(flask.url_for('shared_account'))
                     flask.flash(f"Error! wrong password", 'error')
-                    return flask.redirect(flask.url_for('dashboard'))
+                    return flask.redirect(flask.url_for('shared_account'))
                 
                 
             else:
+                selectedSharedAccQuery = flask.request.args.get('sharedAccountID')
+                if selectedSharedAccQuery:
+                    selectedSharedAccQuery = (int) (selectedSharedAccQuery)
                 sAccID = res[0][2]
                 sharedAccList = sAccID.split(',')[:-1]
+                sharedAccMoneyAmounts = {}
+                blockedSharedAccList = []
                 sharedAccList = list(map(int, sharedAccList))
-                sharedAccListNames = []
+                
                 sAccInfo = "<h4>Shared account(s)</h4><div id = shared-acc-info><div id='listOfAccs'>"
                 for accIDS in sharedAccList:
 
@@ -189,17 +194,22 @@ def shared_account():
 
                     sharedBankRes = cur.fetchall()
                     sharedMoney = sharedBankRes[0][0]
+                    sharedAccMoneyAmounts[accIDS] = sharedMoney
                     if sharedBankRes[0][1] == 1:
                         sAccInfo += f"<div class = 'blocked-Sacc-info'><h5> The shared account {sharedBankRes[0][2]} has been blocked.</h5>\n</div>\n"
+                        blockedSharedAccList.append(accIDS)
 
                     if sharedBankRes[0][1] == 0:
-                        sAccInfo += f"<div class='Sacc-info'><h5> {sharedBankRes[0][2]}: {sharedMoney} euros</h5>\n <button value='{accIDS}'>Select</button></div>"
+                        if accIDS == selectedSharedAccQuery:
+                            sAccInfo += f"<div class='Sacc-info'><h5> {sharedBankRes[0][2]}: {sharedMoney} euros</h5>\n <button value='{accIDS}' id='selected-shared-account-btn'>Selected</button></div>"
+                            continue
+                        sAccInfo += f"<div class='Sacc-info'><h5> {sharedBankRes[0][2]}: {sharedMoney} euros</h5>\n <button value='{accIDS}' class='shared-account-select-btn'>Select</button></div>"
                     
                 sAccInfo += "</div>"
                 if accountStatus == 1:
-                    sAccInfo += "<div class='action-btn-flex'><button class='money-button' value='add-Sacc' disabled >Add money</button>\n<button class='money-button' value='withdraw-Sacc' disabled>Withdraw money</button><button class='money-button' value='join-other-Sacc'>Join other </button\n</div></div>"
+                    sAccInfo += "<h5>Your personal account is blocked. You cannot send nor receive money.</h5><div class='action-btn-flex'><button class='money-button' value='add-Sacc' disabled >Add money</button>\n<button class='money-button' value='withdraw-Sacc' disabled>Withdraw money</button><button class='money-button' value='join-other-Sacc' disabled>Join other shared Account</button>\n</div></div>"
                 else:
-                    sAccInfo += "<div class='action-btn-flex'><button class='money-button' value='add-Sacc'>Add money</button>\n<button class='money-button' value='withdraw-Sacc'>Withdraw money</button>\n</div></div>"
+                    sAccInfo += "<div class='action-btn-flex'><button class='money-button' value='add-Sacc'>Add money</button>\n<button class='money-button' value='withdraw-Sacc'>Withdraw money</button><button class='money-button' value='join-other-Sacc'>Join other shared Account</button>\n</div></div>"
                 sAccInfo += "</div>"
                 if addSAccM:
                     cur.execute("UPDATE sharedBankAccounts SET money=(?)+(?) WHERE sharedAccountID == (?);", (sharedMoney, addSAccM, accIDS))

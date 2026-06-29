@@ -1,10 +1,11 @@
 const disconnectButton = document.getElementById("log-out");
 
 const accountInfo = document.getElementById("acc-info");
-const SaccountInfo = document.getElementById("Sacc-info");
+const SaccountInfo = document.getElementById("shared-acc-info");
 const noSharedAccountInfo = document.getElementById('no-sharedAcc-info');
 
 const moneyButtons = document.getElementsByClassName('money-button');
+const listOfSharedAccs = document.getElementsByClassName('shared-account-select-btn')
 const createSharedAcc = document.getElementById("create-shared-account");
 const joinSharedAcc = document.getElementById("join-shared-account")
 
@@ -126,5 +127,13 @@ Array.from(moneyButtons).forEach(element => {
                 break;
 
         }
+    });
+});
+
+Array.from(listOfSharedAccs).forEach(element => {
+    element.addEventListener("click", () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('sharedAccountID', element.value);
+        window.location.search = urlParams;
     });
 });
