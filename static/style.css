@@ -183,12 +183,13 @@ nav {
     display: flex;
     flex-direction: column;
     border: 1px solid rgba(255, 255, 255, 0.5);
-    border-radius: 30px;
+    border-radius: 15px;
     padding: 25px 50px;
     background-color: rgba(149, 197, 108, 0.1);
     padding: 10px 20px;
     margin: 20px 20px;
     gap: 15px;
+    overflow-y: auto;
 
 }
 
@@ -244,10 +245,6 @@ nav {
 
 .Sacc-info > button:hover {
     background-color: rgba(178, 233, 129, 0.6);
-}
-
-#listOfAccs {
-    overflow-y:auto;
 }
 
 .blocked-Sacc-info {
