@@ -226,6 +226,7 @@ def shared_account():
                         flask.flash("Error. You are already in that shared account.", "error")
                         return flask.redirect(flask.url_for('shared_account'))
                     unhashed_password = flask.request.form.get('passwordSharedAccount')
+                    
                     if tmp == []:
                         flask.flash("Error the account doesn't exist", "error")
                         return flask.redirect(flask.url_for('shared_account'))
